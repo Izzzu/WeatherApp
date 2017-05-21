@@ -24,21 +24,23 @@ http.listen(app.get('port'), () => {
 
 io.on('connection', (socket) => {
 
+
   socket.on('address', (address) => {
     geocode.geocodeAddress(address, (errorMessage, results) => {
         if(errorMessage) {
             console.log(errorMessage);
-            io.emit('errorMessage', errorMessage);
+            socket.emit('errorMessage', errorMessage);
         } else {
             //console.log(JSON.stringify(results, undefined, 2))
-            weather2.getWeather(results.latitude, results.longitude, (errorMessage, weatherResults) => {
+            weather.getWeather(results.latitude, results.longitude, (errorMessage, weatherResults) => {
                 if (errorMessage) {
                     console.log(errorMessage);
+                    socket.emit('errorMessage', errorMessage);
                 } else {
                 console.log("Weather for ",results.addres," : ",weatherResults.summary,
                 ",", weatherResults.temperature," Celsius Degree");
 
-                io.emit('weatherInfo', {
+                socket.emit('weatherInfo', {
                   address: results.address,
                   summary: weatherResults.summary,
                   temperature: weatherResults.temperature

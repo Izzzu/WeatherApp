@@ -11,7 +11,22 @@ var geocodeAddress = (address, callback) => {
             callback('Unable to connect to Google servers.');
 
         } else if (body.status === 'ZERO_RESULTS') {
-            callback('Unable to find that address.');
+            request({
+                url:`https://maps.googleapis.com/maps/api/geocode/json?address=Sosnowiec`,
+                json:true
+            }, (e, r, b) => {
+                if (e || b.status === 'ZERO_RESULTS') {
+                    callback('Unable to find that address.');
+
+                }
+               else {
+                    callback(undefined, {
+                        address: b.results[0].formatted_address,
+                        latitude: b.results[0].geometry.location.lat,
+                        longitude: b.results[0].geometry.location.lng
+                    }); }
+
+            });
 
         } else if (response.statusCode !== 200) {
           callback('Wrong address');
@@ -27,5 +42,7 @@ var geocodeAddress = (address, callback) => {
 
 
 }
+
+
 
 module.exports = {geocodeAddress}
